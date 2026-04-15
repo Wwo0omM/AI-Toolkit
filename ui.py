@@ -74,6 +74,10 @@ class ImageGenerationPanel(bpy.types.Panel):
 
         box = layout.box()
         box.label(text="FLUX Image Generator", icon='BRUSH_DATA')
+
+        # Выбор API
+        box.prop(props, "image_api_type", text="API")
+
         box.prop(props, "image_prompt", text="Prompt")
 
         row = box.row(align=True)

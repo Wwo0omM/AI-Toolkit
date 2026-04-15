@@ -50,3 +50,14 @@ class AIToolkitProperties(bpy.types.PropertyGroup):
         default="Ready",
         description="Current generation status"
     )
+
+    # Выбор API для генерации изображений
+    image_api_type: bpy.props.EnumProperty(
+        name="API Type",
+        items=[
+            ("flux_1", "API v1 (Original)", "Original FLUX API implementation"),
+            ("flux_2", "API v2 (New)", "New FLUX API implementation"),
+        ],
+        default="flux_2",
+        description="Choose which API to use for image generation"
+    )

@@ -1,7 +1,8 @@
 import bpy
 import os
-from .api_client import run_3d_logic
-from . import test_api
+from .hunyuan3d_api import run_3d_logic
+from . import flux_1
+from . import flux_2
 
 class AIToolkitGenerate(bpy.types.Operator):
     bl_idname = "aitoolkit.generate"
@@ -21,7 +22,7 @@ class AIToolkitGenerate(bpy.types.Operator):
         
         self.report({'INFO'}, "Connecting to AI... Blender will freeze for a bit.")
         
-        # Вызываем логику из api_client.py
+        # Вызываем логику из hunyuan3d_api.py
         try:
             # Передаем путь к картинке и имя модели (промпт)
             success = run_3d_logic(image_path, props.prompt, props.space_id)
@@ -41,7 +42,7 @@ class AIToolkitOpenManual(bpy.types.Operator):
     def execute(self, context):
         # Путь к локальному сайту аддона
         addon_dir = os.path.dirname(os.path.realpath(__file__))
-        manual_path = os.path.join(addon_dir, "web_for_addon", "index.html")
+        manual_path = os.path.join(addon_dir, "manual_addon", "index.html")
         bpy.ops.wm.url_open(url=f"file:///{manual_path}")
         return {'FINISHED'}
 
@@ -118,13 +119,24 @@ class AIToolkitGenerateImage(bpy.types.Operator):
                     print(f"[FLUX] {message}")
                     self._current_status = message
 
-                result = test_api.generate_image(
-                    prompt=props.image_prompt,
-                    hf_token=props.hf_token,
-                    width=props.image_width,
-                    height=props.image_height,
-                    callback=status_callback
-                )
+                # Выбираем API в зависимости от настройки
+                if props.image_api_type == "flux_2":
+                    result = flux_2.generate_image(
+                        prompt=props.image_prompt,
+                        hf_token=props.hf_token,
+                        width=props.image_width,
+                        height=props.image_height,
+                        callback=status_callback
+                    )
+                else:  # flux_1
+                    result = flux_1.generate_image(
+                        prompt=props.image_prompt,
+                        hf_token=props.hf_token,
+                        width=props.image_width,
+                        height=props.image_height,
+                        callback=status_callback
+                    )
+
                 self._result_path = result
                 if not result:
                     self._error_message = "No image path returned from API"
